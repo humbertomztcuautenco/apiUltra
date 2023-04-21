@@ -31,6 +31,8 @@ use App\Models\bdModel,
             
         }
 
+        
+
 
         public function leerUsuarios(){
             $leer = $this->db->from($this->tbUser);
