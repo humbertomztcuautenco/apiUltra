@@ -1,0 +1,243 @@
+<?php
+namespace App\Models;
+
+use App\Models\BdModel,
+    App\Lib\Response,
+    App\Lib\HasPass,
+    App\Lib\Codigos,
+    App\Lib\Auth;
+
+
+class ValidateModel{
+    private $db=null;
+    private $response;
+    private $tbUser='persona';
+    private $tbCodigos='codigos_validacion';
+    private $tbRecuperarPassword='codigos_recover_password';
+    private $tbPaises;
+
+    public function __construct(){
+        $db = new DbModel();
+        $this -> db = $db->sqlPDO;
+        $this -> response=new Response();
+    }
+
+    public function validateE($parametros){
+        $email=$parametros->email;
+        $tipo_persona=$parametros->tipo_persona;
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->response->result = null;
+            return  $this->response->SetResponse(false,'El correo no es valido use el formato ejemplo@dominio.com.');
+        } 
+        $validacion = $this->db->from($this->tbUser)
+                            ->where('correo',$email)
+                            ->where('tipo_persona',$tipo_persona)
+                            ->fetch();
+
+        if (!$validacion) {
+            
+            $codigo = Codigos::generar(6);
+            $fechaEx = time() + (24 * 60 * 60);
+            $data = [
+                'codigo'            => $codigo,
+                'correo'             => $email,
+                'status'            => 'active',
+                'fechaExpiracion'   => $fechaEx,
+                'tipo_persona'      => $tipo_persona
+            ];
+            
+            $insertCode = $this->db->insertInto($this->tbCodigos)
+                                ->values($data)
+                                ->execute();
+            
+                            $this->response->result = null;
+                            return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta $email con caducidad de 24 horas.");
+        }else{
+                    $this->response->result = null;
+            return  $this->response->SetResponse(false,'La cuenta ya existe.');
+        }
+
+    }
+
+    public function validarCodigo($parametros){
+        
+        $code = $parametros->codigo;
+        $email = $parametros->correo;
+        $tipo_persona = $parametros->tipo_persona;
+        $fecha = time();
+       
+        $getCode = $this->db->from($this->tbCodigos)
+                         ->where('codigo',$code)
+                         ->where('status','active')
+                         ->where('fechaExpiracion >= ?',$fecha)
+                         ->where('correo',$email)
+                         ->where('tipo_persona',$tipo_persona)
+                         ->orderBy('id DESC')
+                         ->fetch();
+
+        if ($getCode) {
+            // update campo de codigo
+            $this->db->update($this->tbCodigos)
+                        ->set(array('status' => 'inactive'))
+                        ->where('id = ?', $getCode['id'])
+                        ->execute();
+            // generar token de validacion
+            $tokenReg = Auth::TokReg($getCode);
+                    $this->response->result = $tokenReg;
+            return  $this->response->SetResponse(true,'Codigo encontrado.');
+        } else {
+                    $this->response->result = null;
+            return  $this->response->SetResponse(false,'Codigo no valido.');
+        }
+    }
+
+    public function regUsuario($parametros){
+
+        $dupli=$this->db->from($this->tbUser)
+        ->where('correo',$parametros->correo)
+        ->fetch();
+        if (!$dupli) {
+            $data = get_object_vars($parametros);
+            $data['pasword'] = HasPass::hash($data['pasword']);
+            $registro = $this->db->insertInto($this->tbUser,$data)
+                    ->execute();
+            if ($registro != null) {
+                $this->response->result = $parametros;
+                return  $this->response->SetResponse(true,'Usuario registrado.');
+            }else{
+                $this->response->result = $registro;
+                return  $this->response->SetResponse(false,'Usuario no regirstrado.');
+            }
+        }else{
+            $this->response->result = null;
+            return  $this->response->SetResponse(false,'El correo ya esta registrado.');
+        }
+    }
+
+
+
+    public function auth($parametros){
+      
+        
+        $authUser = $this->db->from($this->tbUser)
+                         ->where('correo',$parametros->correo)
+                         ->where('tipo_persona',$parametros->tipo_persona)
+                         ->fetch();
+        if ($authUser != null) {
+            $validarPassword = password_verify($parametros->pasword, $authUser['pasword']);
+            if(!$validarPassword) return $this->response->SetResponse(false,'Password incorrecta.');
+            $token = Auth::addToken($authUser);
+                    $this->response->result = $token;
+            return  $this->response->SetResponse(true,'Success');
+        }else{
+                    // $this->response->result = null;
+            return  $this->response->SetResponse(false,'Email incorrectos.');
+        }                 
+        
+    }
+
+    public function enCodigoPassword($parametros){
+        
+        $user = $this->db->from($this->tbUser)
+                 ->where('correo',$parametros->correo)
+                 ->where('tipo_persona',$parametros->tipo_persona)
+                 ->fetch();
+
+        if($user == null) return  $this->response->SetResponse(false,'El usuario no se encontro.');
+       
+        $codigo = Codigos::generar(6);
+        $fechaEx = time() + (24 * 60 * 60);
+      
+
+        $data = [
+            'codigos'            => $codigo,
+            'status'            => 'active',
+            'fechaExpiracion'   => $fechaEx,
+            'persona_id'      => $user['id']
+        ];
+
+        $altaCode = $this->db->insertInto($this->tbRecuperarPassword)
+                             ->values($data)
+                             ->execute();
+
+                $this->response->result = null;
+        return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta {$user['email']} con caducidad de 24 horas.");
+                        
+    }
+
+    public function vaCodigoPassword($parametros){
+        $codigo = $parametros->codigo;
+        $correo = $parametros->correo;
+        $tipo_persona = $parametros->tipo_persona;
+        $fecha = time();
+        // get user
+        $user = $this->db->from($this->tbUser)
+                 ->where('correo',$correo)
+                 ->where('tipo_persona',$tipo_persona)
+                 ->fetch();
+
+        if($user == null) return  $this->response->SetResponse(false,'El usuario no se encontro.');
+        // 
+        $getCode = $this->db->from($this->tbRecuperarPassword)
+                         ->where('codigos',$codigo)
+                         ->where('status','active')
+                         ->where('fechaExpiracion >= ?',$fecha)
+                         ->where('persona_id',$user['id'])
+                         ->orderBy('id DESC')
+                         ->fetch();
+        if ($getCode) {
+            
+            $this->db->update($this->tbRecuperarPassword)
+                        ->set(array('status' => 'inactive'))
+                        ->where('id = ?', $getCode['id'])
+                        ->execute();
+            
+            $tokenRecover = Auth::tokRecPass($getCode);
+                    $this->response->result = $tokenRecover;
+            return  $this->response->SetResponse(true,'Codigo encontrado.');
+        } else {
+                    $this->response->result = null;
+            return  $this->response->SetResponse(false,'Codigo no valido.');
+        }
+    }
+
+    public function recuperarPassword($parametros){
+        $correo = $parametros->correo;
+        $tipo_persona = $parametros->tipo_persona;
+        $password = $parametros->password;
+
+        $user = $this->db->from($this->tbUser)
+                            ->where('correo ',$correo)
+                            ->where('tipo_persona',$tipo_persona)
+                            ->fetch();
+        
+        if($user == null) return  $this->response->SetResponse(false,'El usuario no se encontro.');
+        
+        $password = HasPass::hash($password);
+        $this->db->update($this->tbUser)
+                ->set(array('pasword' => $password))
+                ->where('correo',$correo)
+                ->where('tipo_persona',$tipo_persona)
+                ->execute();
+
+                $this->response->result = null;
+        return  $this->response->SetResponse(true,'Password actualizada.');
+    }
+
+    public function getUser($token){
+        $res = auth::decData($token);
+        if ($res == null) return $this->response->SetResponse(false,"No hay datos.");
+                $this->response->result = $res;
+        return  $this->response->SetResponse(true,'Informacion de user.');
+    }
+
+
+    public function getCodePais() {
+        $extencionPais = $this->db->from($this->tbPaises)
+                 ->fetchAll();
+                 $this->response->result = $extencionPais;
+         return  $this->response->SetResponse(true,'Lista de codigos de paises');
+
+    }
+}

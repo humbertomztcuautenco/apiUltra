@@ -1,16 +1,19 @@
 <?php
 namespace App\Models;
 
-use App\Models\bdModel,
-    App\Lib\Response;
+use App\Models\BdModel,
+    App\Lib\Response,
+    App\Lib\Codigos,
+    App\Lib\HasPass;
 
-    class userModel{
+    class PruebaModel{
         private $db=null;
         private $response;
         private $tbUser='users';
+        private $tbUser3='usu5';
 
         public function __construct(){
-            $db = new dbModel();
+            $db = new DbModel();
             $this->db=$db->sqlPDO;
             $this->response=new Response();
         }
@@ -30,8 +33,6 @@ use App\Models\bdModel,
             }
             
         }
-
-        
 
 
         public function leerUsuarios(){
@@ -96,6 +97,58 @@ use App\Models\bdModel,
                     $this->response->result = $leer;
                     return  $this->response->SetResponse(false,'Usuario no encontrado.');
             }
+        }
+
+        public function validar($parametros){
+            $password=HasPass::hash($parametros->password);
+            $tipoUsser = $parametros->tipoUsser;
+            $email = $parametros->email;
+            $name = $parametros->name;
+            $secondName = $parametros->secondName;
+            
+    
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $this->response->result = null;
+                return  $this->response->SetResponse(false,'El correo no es valido use el formato ejemplo@dominio.com.');
+            } 
+            $validacion = $this->db->from($this->tbUser3)
+                                   ->where('name',$name)
+                               
+                                   ->fetch();
+    
+            if (!$validacion) {
+                
+                $codigo = Codigos::generar(6);
+                $data = [
+                    'codigo'        => $codigo,
+                    'email'         => $email,
+                    'name'          => $name,
+                    'secondName'    => $secondName,
+                    'password'      => $password,
+                    'tipoUsser'     => $tipoUsser
+                ];
+
+                $insertCode = $this->db->insertInto($this->tbUser3)
+                                       ->values($data)
+                                       ->execute();
+                
+                
+                            $this->response->result = null;
+                    return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta $email con caducidad de 24 horas");
+                
+            }else{
+                        $this->response->result = null;
+                return  $this->response->SetResponse(false,'La cuenta ya existe.');
+            }
+        }
+
+        public function password ($data){
+            $data2= HasPass::hash($data->password);
+
+            return ['contraseña1' => $data,
+            'contraseña' => $data2];
+
+
         }
 
     }

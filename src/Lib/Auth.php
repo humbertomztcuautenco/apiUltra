@@ -70,20 +70,20 @@ class Auth {
         }
     }
 
-    public static function validToken($token){
+    public static function validateToken($token){
         if(empty($token)||$token == NULL) {
-           
+            // throw new Exception("Invalid token supplied.");
             return false;
         }
         $decode = self::decode64($token);
-       
+        // var_dump($decode);
         if ($decode === NULL) {
-            
+            // throw new Exception("Token no exist");
             return false;
         }
-        
+        // var_dump($validate);
         if ($decode->exp <= time()) {
-           
+            // throw new Exception("Token Expired");
             return false;
         }
         if($decode->aud !== self::Aud()) {

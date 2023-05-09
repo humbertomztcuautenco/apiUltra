@@ -3,7 +3,7 @@ namespace App\Models;
 
 use PDO;
 
-class dbModel{
+class DbModel{
     public $sqlPDO=null;
     public function __CONSTRUCT(){
         try{
