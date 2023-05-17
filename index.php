@@ -11,6 +11,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
+use App\Controllers\AdminController;
+use App\Lib\Auth;
+use App\Middleware\AuthMiddleware;
+use Slim\Routing\RouteCollectorProxy;
+
 //env 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -35,5 +40,6 @@ $app->get('/', function (Request $request, Response $response) {
              ->getBody()->write("Pagina principal");
     return $response;
 });
+$app->get('/misCarreras/{token}', AdminController::class.':misCarreras');//listo
 
 $app->run();
