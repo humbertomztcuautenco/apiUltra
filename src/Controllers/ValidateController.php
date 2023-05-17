@@ -37,7 +37,7 @@ class ValidateController{
         $parametros = json_decode($req->getBody()->getContents());
         $parametros->tipo_persona = 2;
         $res->withHeader('Content-type','application/json')
-            ->getBody()->write(json_encode( $this->valid->registrarUsuario($parametros)));
+            ->getBody()->write(json_encode( $this->valid->regUsuario($parametros)));
         return $res;
     }
     
@@ -45,7 +45,7 @@ class ValidateController{
         $parametros = json_decode($req->getBody()->getContents());
         $parametros->tipo_persona = 3;
         $res->withHeader('Content-type','application/json')
-            ->getBody()->write(json_encode( $this->valid->registrarUsuario($parametros)));
+            ->getBody()->write(json_encode( $this->valid->regUsuario($parametros)));
         return $res;
     }
     

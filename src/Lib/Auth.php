@@ -25,13 +25,24 @@ class Auth {
         return sha1($aud);
     }
 
-    public static function addToken(){
+    public static function addToken($data){
         $time=time();
         $tokeninf=[
             'exp' => $time+(60*self::$minutes),
             'aud' => self::Aud(),
             'data' => $data
         ];
+        $token=json_encode($tokeninf);
+        return base64_encode($token);
+    }
+    public static function tokRecPass($data){
+        $time=time();
+
+        $tokeninf=array(
+            'exp'=>$time+((60*60)*24),
+            'aud'=>self::Aud(),
+            'data'=>$data
+        );
         $token=json_encode($tokeninf);
         return base64_encode($token);
     }
@@ -49,17 +60,7 @@ class Auth {
 
     }
 
-    public static function tokRecPass($data){
-        $time=time();
-
-        $tokeninf=array(
-            'exp'=>$time+((60*60)*24),
-            'aud'=>self::Aud(),
-            'data'=>$data
-        );
-        $token=json_encode($tokeninf);
-        return base64_encode($token);
-    }
+   
 
     public static function decData($token){
         $data=self::decode64($token);

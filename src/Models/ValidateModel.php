@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Models\BdModel,
     App\Lib\Response,
+    App\Lib\ResponseAuth,
     App\Lib\HasPass,
     App\Lib\Codigos,
     App\Lib\Auth;
@@ -11,6 +12,7 @@ use App\Models\BdModel,
 class ValidateModel{
     private $db=null;
     private $response;
+    private $responseA;
     private $tbUser='persona';
     private $tbCodigos='codigos_validacion';
     private $tbRecuperarPassword='codigos_recover_password';
@@ -20,6 +22,7 @@ class ValidateModel{
         $db = new DbModel();
         $this -> db = $db->sqlPDO;
         $this -> response=new Response();
+        $this -> responseA=new ResponseAuth();
     }
 
     public function validateE($parametros){
@@ -35,24 +38,57 @@ class ValidateModel{
                             ->where('tipo_persona',$tipo_persona)
                             ->fetch();
 
+        $validacion2=$this->db->from($this->tbCodigos)
+                            ->where('correo',$email)
+                            ->where('tipo_persona',$tipo_persona)
+                            ->fetch();
+
         if (!$validacion) {
+
+            if(!$validacion2){
+                $codigo = Codigos::generar(6);
+                $fechaEx = time() + (24 * 60 * 60);
+                $data = [
+                    'codigo'            => $codigo,
+                    'correo'             => $email,
+                    'status'            => 'active',
+                    'fechaExpiracion'   => $fechaEx,
+                    'tipo_persona'      => $tipo_persona
+                ];
+                
+                $insertCode = $this->db->insertInto($this->tbCodigos)
+                                    ->values($data)
+                                    ->execute();
+            }else{
+                $codigo = Codigos::generar(6);
+                $fechaEx = time() + (24 * 60 * 60);
+                $data = [
+                    'codigo'            => $codigo,
+                    'status'            => 'active',
+                    'fechaExpiracion'   => $fechaEx
+                ];
+                
+                $insertCode = $this->db->update($this->tbCodigos)
+                                    ->where('correo',$email)
+                                    ->where('tipo_persona',$tipo_persona)
+                                    ->set($data)
+                                    ->execute();
+            }
             
-            $codigo = Codigos::generar(6);
-            $fechaEx = time() + (24 * 60 * 60);
-            $data = [
-                'codigo'            => $codigo,
-                'correo'             => $email,
-                'status'            => 'active',
-                'fechaExpiracion'   => $fechaEx,
-                'tipo_persona'      => $tipo_persona
-            ];
             
-            $insertCode = $this->db->insertInto($this->tbCodigos)
-                                ->values($data)
-                                ->execute();
+
             
+            /*$subject='Envio de codigo';
+            $message='Envio de codigo de registro para "Ultra App"'.$codigo;
+            $headers='From: Prueba codigo :D';
+
+            if (mail($email, $subject, $message, $headers)) {*/
                             $this->response->result = null;
                             return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta $email con caducidad de 24 horas.");
+            /*}else{
+                $this->response->result = null;
+               return  $this->response->SetResponse(false,'El correo no se pudo enviar.');
+            }   */        
         }else{
                     $this->response->result = null;
             return  $this->response->SetResponse(false,'La cuenta ya existe.');
@@ -98,7 +134,18 @@ class ValidateModel{
         ->where('correo',$parametros->correo)
         ->fetch();
         if (!$dupli) {
-            $data = get_object_vars($parametros);
+            $data = [
+                'nombre'=>$parametros->nombre,
+                'apellidoPaterno'=>$parametros->apellidoPaterno,
+                'apellidoMaterno'=>$parametros->apellidoMaterno,
+                'correo'=>$parametros->correo,
+                'pasword'=>$parametros->pasword,
+                'numeroTelefono'=>$parametros->numeroTelefono,
+                'status'=>'activo',
+                'pais'=>$parametros->pais,
+                'tipo_persona'=>$parametros->tipo_persona
+
+            ];
             $data['pasword'] = HasPass::hash($data['pasword']);
             $registro = $this->db->insertInto($this->tbUser,$data)
                     ->execute();
@@ -128,8 +175,9 @@ class ValidateModel{
             $validarPassword = password_verify($parametros->pasword, $authUser['pasword']);
             if(!$validarPassword) return $this->response->SetResponse(false,'Password incorrecta.');
             $token = Auth::addToken($authUser);
-                    $this->response->result = $token;
-            return  $this->response->SetResponse(true,'Success');
+                    $this->responseA->result = $token;
+                    $this->responseA->id = $authUser['id'];
+            return  $this->responseA->SetResponse(true,'Success');
         }else{
                     // $this->response->result = null;
             return  $this->response->SetResponse(false,'Email incorrectos.');
@@ -143,26 +191,48 @@ class ValidateModel{
                  ->where('correo',$parametros->correo)
                  ->where('tipo_persona',$parametros->tipo_persona)
                  ->fetch();
+        $id=$user['id'];
+
+        $validar = $this->db->from($this->tbRecuperarPassword)
+                 ->where('persona_id',$id)
+                 ->fetch();
+        
 
         if($user == null) return  $this->response->SetResponse(false,'El usuario no se encontro.');
-       
-        $codigo = Codigos::generar(6);
-        $fechaEx = time() + (24 * 60 * 60);
-      
 
-        $data = [
-            'codigos'            => $codigo,
-            'status'            => 'active',
-            'fechaExpiracion'   => $fechaEx,
-            'persona_id'      => $user['id']
-        ];
+        if(!$validar){
+            $codigo = Codigos::generar(6);
+            $fechaEx = time() + (24 * 60 * 60);
+        
 
-        $altaCode = $this->db->insertInto($this->tbRecuperarPassword)
-                             ->values($data)
-                             ->execute();
+            $data = [
+                'codigos'            => $codigo,
+                'status'            => 'active',
+                'fechaExpiracion'   => $fechaEx,
+                'persona_id'      => $id
+            ];
+
+            $altaCode = $this->db->insertInto($this->tbRecuperarPassword)
+                                ->values($data)
+                                ->execute();
+        }else{
+            $codigo = Codigos::generar(6);
+            $fechaEx = time() + (24 * 60 * 60);
+        
+
+            $data = [
+                'codigos'            => $codigo,
+                'status'            => 'active',
+                'fechaExpiracion'   => $fechaEx,
+            ];
+            $altaCode = $this->db->update($this->tbRecuperarPassword)
+                                ->where('persona_id',$id)
+                                ->set($data)
+                                ->execute();
+        }
 
                 $this->response->result = null;
-        return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta {$user['email']} con caducidad de 24 horas.");
+        return  $this->response->SetResponse(true,"Se envio un codigo a la cuenta {$user['correo']} con caducidad de 24 horas.");
                         
     }
 
