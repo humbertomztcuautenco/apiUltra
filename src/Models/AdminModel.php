@@ -582,7 +582,7 @@ use App\Models\BdModel,
                 return  $this->response->SetResponse(true,"No existe alguna carrera con el nombre {$parametros->nombre}");
         }
     }
-    //Truismo
+    //Turismo
     public function addTurismo($parametros, $persona){
         $validacion = $this->db->from($this->tbCarrera)
                             ->where('nombreCarrera',$parametros->nombreCarrera)
@@ -591,23 +591,24 @@ use App\Models\BdModel,
         if($validacion){
             $id=$validacion['id'];
             $validacion2 = $this->db->from($this->tbTurismo)
-                            ->where('tipo_contacto',$parametros->tipo)
+                            ->where('tipoTurismo',$parametros->tipo)
                             ->where('datos_carrera',$id)
                             ->fetch();
             if(!$validacion2){
                 $data=[
-                    'descripcion'=>$parametros->descripcion,
+                    'url'=>$parametros->url,
+                    'detalles'=>$parametros->descripcion,
                     'datos_carrera'=>$id,
-                    'tipo_contacto'=>$parametros->tipo
+                    'tipoTurismo'=>$parametros->tipo
                 ];
-                $agregar=$this->db->insertInto($this->tbContacto)
+                $agregar=$this->db->insertInto($this->tbTurismo)
                                 ->values($data)
                                 ->execute();
                 $this->response->result = null;
-                return  $this->response->SetResponse(true,"Se ha agregado el contacto");
+                return  $this->response->SetResponse(true,"Se ha agregado exitosamente");
             }else{
                 $this->response->result = null;
-                return  $this->response->SetResponse(true,"ya existe este contacto para la carrera {$parametros->nombreCarrera}");
+                return  $this->response->SetResponse(true,"ya existe este lugar turistico en esta carrera {$parametros->nombreCarrera}");
             }
         }else{
             $this->response->result = null;

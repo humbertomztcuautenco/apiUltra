@@ -177,5 +177,14 @@ class AdminController{
                 ->getBody()->write(json_encode( $this->admin->delContact($parametros, $token)));
         return $res;
     }
+    //turismo
+    public function addTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->addTurismo($parametros, $token)));
+        return $res;
+    }
 
 }

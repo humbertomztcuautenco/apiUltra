@@ -32,4 +32,6 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->put('actualizarContacto/{token}', AdminController::class.':actContact');//listo
     $group->get('verContactos/{token}', AdminController::class.':verContacts');//listo
     $group->delete('eliminarContacto/{token}', AdminController::class.':delContact');//listo
+    //turismo
+    $group->post('agregarTurismo/{token}', AdminController::class.':addTurismo');//listo
 });
