@@ -21,20 +21,20 @@ class AdminController{
         return $res;
     }
 
-    public function misCarreras(Request $req, Response $res, $args){
+    public function verCarreras(Request $req, Response $res, $args){
         $token = $args['token'];
 
         $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->misCarreras($token)));
+                ->getBody()->write(json_encode( $this->admin->verCarreras($token)));
         return $res;
     }
 
-    public function datosCarrera(Request $req, Response $res, $args){
+    public function actCarrera(Request $req, Response $res, $args){
         $parametros = json_decode($req->getBody()->getContents());
         $token = $args['token'];
 
         $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->datosCarrera($parametros, $token)));
+                ->getBody()->write(json_encode( $this->admin->actCarrera($parametros, $token)));
         return $res;
     }
 
@@ -184,6 +184,30 @@ class AdminController{
 
         $res    ->withHeader('Content-type','application/json')
                 ->getBody()->write(json_encode( $this->admin->addTurismo($parametros, $token)));
+        return $res;
+    }
+    public function actTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->actTurismo($parametros, $token)));
+        return $res;
+    }
+    public function verTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verTurismo($parametros, $token)));
+        return $res;
+    }
+    public function delTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->delTurismo($parametros, $token)));
         return $res;
     }
 

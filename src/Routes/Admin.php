@@ -9,8 +9,8 @@ $authMiddleware = new AuthMiddleware();
 $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddleware) {
     //carreras
     $group->post('crearCarrera/{token}', AdminController::class.':crearCarrera');//listo
-    $group->get('misCarreras/{token}', AdminController::class.':misCarreras');//listo
-    $group->put('datosCarrera/{token}', AdminController::class.':datosCarrera');//listo
+    $group->get('verCarreras/{token}', AdminController::class.':verCarreras');//listo
+    $group->put('actualizarCarrera/{token}', AdminController::class.':actCarrera');//listo
     $group->delete('eliminarCarrera/{token}', AdminController::class.':delCarrera');//listo
     //distancias
     $group->post('distancia/{token}', AdminController::class.':distance');//listo
@@ -34,4 +34,7 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->delete('eliminarContacto/{token}', AdminController::class.':delContact');//listo
     //turismo
     $group->post('agregarTurismo/{token}', AdminController::class.':addTurismo');//listo
+    $group->put('actualizarTurismo/{token}', AdminController::class.':actTurismo');
+    $group->get('verTurismo/{token}', AdminController::class.':verTurismo');//listo
+    $group->delete('eliminarTurismo/{token}', AdminController::class.':delTurismo');//listo
 });

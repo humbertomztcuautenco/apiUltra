@@ -13,6 +13,8 @@ class ValidateController{
     
     function validarEmail(Request $req, Response $res, $args){
         $parametros = json_decode($req->getBody()->getContents());
+        $parametros->tipo_persona = 1;
+        
         $res->withHeader('Content-type','application/json')
             ->getBody()->write(json_encode( $this->valid->validateE($parametros)));
         return $res;

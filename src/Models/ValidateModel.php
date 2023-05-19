@@ -27,7 +27,6 @@ class ValidateModel{
 
     public function validateE($parametros){
         $email=$parametros->email;
-        $tipo_persona=$parametros->tipo_persona;
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->response->result = null;
@@ -35,12 +34,12 @@ class ValidateModel{
         } 
         $validacion = $this->db->from($this->tbUser)
                             ->where('correo',$email)
-                            ->where('tipo_persona',$tipo_persona)
+                            ->where('tipo_persona',$parametros->tipo_persona)
                             ->fetch();
 
         $validacion2=$this->db->from($this->tbCodigos)
                             ->where('correo',$email)
-                            ->where('tipo_persona',$tipo_persona)
+                            ->where('tipo_persona',$parametros->tipo_persona)
                             ->fetch();
 
         if (!$validacion) {
@@ -131,8 +130,8 @@ class ValidateModel{
     public function regUsuario($parametros){
 
         $dupli=$this->db->from($this->tbUser)
-        ->where('correo',$parametros->correo)
-        ->fetch();
+                        ->where('correo',$parametros->correo)
+                        ->fetch();
         if (!$dupli) {
             $data = [
                 'nombre'=>$parametros->nombre,
