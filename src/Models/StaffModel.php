@@ -10,12 +10,6 @@ use App\Models\BdModel,
     class StaffModel{
         private $db=null;
         private $response;
-        private $tbCarrera='datos_carrera';
-        private $tbDistancia='distancia';
-        private $tbAviso='avisos';
-        private $tbAcerca='acerca_de';
-        private $tbContacto='contacto_carrera';
-        private $tbTurismo='turismo';
         private $tbPersona='persona';
 
         public function __construct(){

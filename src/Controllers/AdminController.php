@@ -210,5 +210,38 @@ class AdminController{
                 ->getBody()->write(json_encode( $this->admin->delTurismo($parametros, $token)));
         return $res;
     }
+    public function todasCarreras(Request $req, Response $res, $args){
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->todasCarreras()));
+        return $res;
+    }
+    //boletos
+
+    public function addBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->addBoleto($parametros, $token)));
+        return $res;
+    }
+    public function verBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verBoleto($parametros, $token)));
+        return $res;
+    }
+
+    public function verBoleto2(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verBoleto2($parametros, $token)));
+        return $res;
+    }
 
 }

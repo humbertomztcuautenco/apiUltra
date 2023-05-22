@@ -17,6 +17,7 @@ use App\Models\BdModel,
         private $tbContacto='contacto_carrera';
         private $tbTurismo='turismo';
         private $tbPersona='persona';
+        private $tbBoleto='boleto';
 
         public function __construct(){
             $db = new DbModel();
@@ -155,23 +156,35 @@ use App\Models\BdModel,
         public function distance($parametros, $persona){
             $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);                
 
-            if(!$validacion){
+            if($validacion){
                 $id=$validacion['id'];
-                $data=[
-                    'kilometros'=>$parametros->kilometros,
-                    'capacidad'=>$parametros->capacidad,
-                    'datos_carrera'=>$id,
-                    'descripcion'=>$parametros->descripcion
-                ];
-                $agregar=$this->db->insertInto($this->tbDistancia)
-                                    ->values($data)
-                                    ->execute();
-                
+                $validacion2=$this->db->from($this->tbDistancia)
+                                    ->where('descripcion',$parametros->descripcion)
+                                    ->where('datos_carrera',$id)
+                                    ->fetch();
+                if(!$validacion2){
+                    $data=[
+                        'kilometros'=>$parametros->kilometros,
+                        'capacidad'=>$parametros->capacidad,
+                        'datos_carrera'=>$id,
+                        'descripcion'=>$parametros->descripcion
+                    ];
+                    $agregar=$this->db->insertInto($this->tbDistancia)
+                                        ->values($data)
+                                        ->execute();
+                    
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Se ha agregado la distancia de {$parametros->kilometros} a la carrera {$parametros->nombreCarrera} ");
+               
+                }else{
+                    $this->response->result = null;
+                    return  $this->response->SetResponse(true,"Ya existe una carrera con ese nombre");
+                }
+            }else{
                 $this->response->result = null;
-                    return  $this->response->SetResponse(true,"Se ha agregado la distancia de {$parametros->kilometros} a la carrera {$parametros->nombreCarrera} ");
+                    return  $this->response->SetResponse(true,"Parece que ha ocurrido un problema");
+
             }
-            $this->response->result = null;
-                    return  $this->response->SetResponse(false,"Parece que ha ocurrido un problema");
         }
 
         public function verDistance($parametros,$persona){
@@ -184,7 +197,7 @@ use App\Models\BdModel,
                                         ->fetchAll();
                     if($leer){
                         $this->response->result = $leer;
-                        return  $this->response->SetResponse(true,"Distancias de la carrera {$parametros->nombre}");
+                        return  $this->response->SetResponse(true,"Distancias de la carrera {$parametros->nombreCarrera}");
                     }else{
                         $this->response->result = null;
                         return  $this->response->SetResponse(false,"Parece que aun no tienes alguna distancia en esta carrera");
@@ -666,4 +679,113 @@ use App\Models\BdModel,
                     return  $this->response->SetResponse(true,"No existe alguna carrera con el nombre {$parametros->nombre}");
             }
         }
+
+        public function todasCarreras(){
+             $carrera = $this->db->from($this->tbCarrera)
+                            ->select('id, nombreCarrera, lugar, fecha')
+                            ->fetchAll();
+            return $carrera;
+        }
+
+        //boletos
+        public function addBoleto($parametros, $persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+            if($validacion){
+                $id=$validacion['id'];
+                $validacion2 = $this->db->from($this->tbDistancia)
+                                ->where('descripcion',$parametros->distancia)
+                                ->where('datos_carrera',$id)
+                                ->fetch();
+                if($validacion2){
+                    $id2=$validacion2['id'];
+                    $validacion3 = $this->db->from($this->tbBoleto)
+                                ->where('distancia',$id2)
+                                ->where('carrera',$id)
+                                ->fetch();
+                    if(!$validacion3){
+                        $data=[
+                            'precio'=>$parametros->precio,
+                            'periodoVentaInicio'=>$parametros->inicio,
+                            'periodoVentaFin'=>$parametros->fin,
+                            'cantidadBoletos'=>$parametros->cantidad,
+                            'tipo_boleto'=>$parametros->tipo,
+                            'distancia'=>$id2,
+                            'carrera'=>$id
+                        ];
+                        $agregar=$this->db->insertInto($this->tbBoleto)
+                                        ->values($data)
+                                        ->execute();
+                        $this->response->result = null;
+
+                        return  $this->response->SetResponse(true,"Se ha agregado un boleto exitosamente");
+                    }else{
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Ha ocurrido un error");
+                    }
+                }else{
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La distancia no existe");
+                }
+            }else{
+                $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La carrera no existe");
+            }
+        }
+
+        public function verBoleto($parametros,$persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+            if($validacion){
+                $id=$validacion['id'];
+
+                    $validacion3 = $this->db->from($this->tbBoleto)
+                                ->where('carrera',$id)
+                                ->fetch();
+
+                    if($validacion3){
+                         $this->response->result = $validacion3;
+                        return  $this->response->SetResponse(true,"Boletos existentes para la carrera {$parametros->nombreCarrera}");
+                    }else{
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Al parecer aun no tienes boletos para esta carrera");
+                    }   
+            }else{
+                $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La carrera no existe");
+            }
+        }
+
+        public function verBoleto2($parametros,$persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+            if($validacion){
+                $id=$validacion['id'];
+                $validacion2 = $this->db->from($this->tbDistancia)
+                                ->where('descripcion',$parametros->distancia)
+                                ->where('datos_carrera',$id)
+                                ->fetch();
+                if($validacion2){
+                    $id2=$validacion2['id'];
+                    $validacion3 = $this->db->from($this->tbBoleto)
+                                ->where('distancia',$id2)
+                                ->where('carrera',$id)
+                                ->fetch();
+
+                    if($validacion3){
+                        
+                        $this->response->result = $validacion3;
+
+                        return  $this->response->SetResponse(true,"Boleto para la distancia {$parametros->distancia}");
+                    }else{
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Ha ocurrido un error");
+                    }
+                }else{
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La distancia no existe");
+                }
+            }else{
+                $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La carrera no existe");
+            }
+        }
+
     }
