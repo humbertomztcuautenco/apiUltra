@@ -21,20 +21,20 @@ class AdminController{
         return $res;
     }
 
-    public function misCarreras(Request $req, Response $res, $args){
+    public function verCarreras(Request $req, Response $res, $args){
         $token = $args['token'];
 
         $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->misCarreras($token)));
+                ->getBody()->write(json_encode( $this->admin->verCarreras($token)));
         return $res;
     }
 
-    public function datosCarrera(Request $req, Response $res, $args){
+    public function actCarrera(Request $req, Response $res, $args){
         $parametros = json_decode($req->getBody()->getContents());
         $token = $args['token'];
 
         $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->datosCarrera($parametros, $token)));
+                ->getBody()->write(json_encode( $this->admin->actCarrera($parametros, $token)));
         return $res;
     }
 
@@ -175,6 +175,72 @@ class AdminController{
 
         $res    ->withHeader('Content-type','application/json')
                 ->getBody()->write(json_encode( $this->admin->delContact($parametros, $token)));
+        return $res;
+    }
+    //turismo
+    public function addTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->addTurismo($parametros, $token)));
+        return $res;
+    }
+    public function actTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->actTurismo($parametros, $token)));
+        return $res;
+    }
+    public function verTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verTurismo($parametros, $token)));
+        return $res;
+    }
+    public function delTurismo(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->delTurismo($parametros, $token)));
+        return $res;
+    }
+    public function todasCarreras(Request $req, Response $res, $args){
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->todasCarreras()));
+        return $res;
+    }
+    //boletos
+
+    public function addBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->addBoleto($parametros, $token)));
+        return $res;
+    }
+    public function verBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verBoleto($parametros, $token)));
+        return $res;
+    }
+
+    public function verBoleto2(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verBoleto2($parametros, $token)));
         return $res;
     }
 

@@ -787,6 +787,4 @@ use App\Models\BdModel,
                         return  $this->response->SetResponse(true,"La carrera no existe");
             }
         }
-
-
 }

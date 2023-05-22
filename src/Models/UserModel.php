@@ -26,6 +26,7 @@ use App\Models\BdModel,
                 $this->response->result = $res->id;
                 return  $this->response->SetResponse(true,'id.');
         }
+        
 
         
     }
