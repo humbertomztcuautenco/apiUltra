@@ -87,5 +87,6 @@ class ValidateController{
         $res    ->withHeader('Content-type','application/json')
         ->getBody()->write(json_encode( $this->valid->getCodePais()));
         return $res;
+        
     }
 }
