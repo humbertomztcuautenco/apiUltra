@@ -79,6 +79,14 @@ class AdminController{
                 ->getBody()->write(json_encode( $this->admin->delDistance($parametros, $token)));
         return $res;
     }
+    public function nombreDistancia(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->nombreDistancia($parametros, $token)));
+        return $res;
+    }
     //avisos
     public function crearAviso(Request $req, Response $res, $args){
         $parametros = json_decode($req->getBody()->getContents());
@@ -213,7 +221,7 @@ class AdminController{
     public function todasCarreras(Request $req, Response $res, $args){
 
         $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->todasCarreras()));
+                ->getBody()->write(json_encode( $this->admin->carreras()));
         return $res;
     }
     //boletos
@@ -243,5 +251,45 @@ class AdminController{
                 ->getBody()->write(json_encode( $this->admin->verBoleto2($parametros, $token)));
         return $res;
     }
+
+    public function actBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->actBoleto($parametros, $token)));
+        return $res;
+    }
+    public function delBoleto(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->delBoleto($parametros, $token)));
+        return $res;
+    }
+
+    //imagenes
+    public function addImagen(Request $req, Response $res, $args){
+        $parametros = $_POST;  // Datos del formulario
+        $imagen = $_FILES['imagen'];  // Archivo de imagen
+
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->addImagen($parametros,$imagen, $token)));
+        return $res;
+    }
+
+    public function verImagen(Request $req, Response $res, $args){
+        $parametros = $_POST;  // Datos del formulario
+
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->admin->verImagen($parametros, $token)));
+        return $res;
+    }
+    
 
 }
