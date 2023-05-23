@@ -128,13 +128,8 @@ class ValidateModel{
     }
 
     public function regUsuario($parametros){
-<<<<<<< HEAD
         
             $dupli=$this->db->from($this->tbUser)
-=======
-
-        $dupli=$this->db->from($this->tbUser)
->>>>>>> main
                         ->where('correo',$parametros->correo)
                         ->fetch();
         if (!$dupli) {

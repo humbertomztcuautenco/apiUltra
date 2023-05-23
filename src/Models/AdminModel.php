@@ -925,4 +925,5 @@ use App\Models\BdModel,
                         return  $this->response->SetResponse(true,"Portada");
         }
 
+        
 }
