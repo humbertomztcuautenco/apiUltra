@@ -35,6 +35,6 @@ $app->get('/', function (Request $request, Response $response) {
              ->getBody()->write("Pagina principal");
     return $response;
 });
-$app->get('/misCarreras/{token}', AdminController::class.':misCarreras');//listo
+
 
 $app->run();

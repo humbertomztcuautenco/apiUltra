@@ -52,7 +52,7 @@ class ValidateModel{
                     'correo'             => $email,
                     'status'            => 'active',
                     'fechaExpiracion'   => $fechaEx,
-                    'tipo_persona'      => $tipo_persona
+                    'tipo_persona'      => $parametros->tipo_persona
                 ];
                 
                 $insertCode = $this->db->insertInto($this->tbCodigos)
@@ -128,8 +128,13 @@ class ValidateModel{
     }
 
     public function regUsuario($parametros){
+<<<<<<< HEAD
+        
+            $dupli=$this->db->from($this->tbUser)
+=======
 
         $dupli=$this->db->from($this->tbUser)
+>>>>>>> main
                         ->where('correo',$parametros->correo)
                         ->fetch();
         if (!$dupli) {
@@ -153,12 +158,10 @@ class ValidateModel{
                 return  $this->response->SetResponse(true,'Usuario registrado.');
             }else{
                 $this->response->result = $registro;
-                return  $this->response->SetResponse(false,'Usuario no regirstrado.');
+                return  $this->response->SetResponse(false,'Usuario no registrado.');
             }
-        }else{
-            $this->response->result = null;
-            return  $this->response->SetResponse(false,'El correo ya esta registrado.');
         }
+        
     }
 
 
@@ -168,18 +171,18 @@ class ValidateModel{
         
         $authUser = $this->db->from($this->tbUser)
                          ->where('correo',$parametros->correo)
-                         ->where('tipo_persona',$parametros->tipo_persona)
                          ->fetch();
+
         if ($authUser != null) {
             $validarPassword = password_verify($parametros->pasword, $authUser['pasword']);
-            if(!$validarPassword) return $this->response->SetResponse(false,'Password incorrecta.');
+            if(!$validarPassword) return $this->response->SetResponse(false,'Contraseña incorrecta.');
             $token = Auth::addToken($authUser);
                     $this->responseA->result = $token;
                     $this->responseA->id = $authUser['id'];
-            return  $this->responseA->SetResponse(true,'Success');
+            return  $this->responseA->SetResponse(true,'Inicio de sesion correcto');
         }else{
                     // $this->response->result = null;
-            return  $this->response->SetResponse(false,'Email incorrectos.');
+            return  $this->response->SetResponse(false,'Correo incorrecto.');
         }                 
         
     }

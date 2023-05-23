@@ -7,7 +7,7 @@ use App\Models\BdModel,
     App\Lib\HasPass,
     App\Lib\Auth;
 
-    class AdminModel{
+        class AdminModel{
         private $db=null;
         private $response;
         private $tbCarrera='datos_carrera';
@@ -18,6 +18,8 @@ use App\Models\BdModel,
         private $tbTurismo='turismo';
         private $tbPersona='persona';
         private $tbBoleto='boleto';
+        private $tbCupon='cupon';
+        private $tbGaleria='galeria';
 
         public function __construct(){
             $db = new DbModel();
@@ -206,6 +208,26 @@ use App\Models\BdModel,
                     return  $this->response->SetResponse(false,"Parece que la carrera no existe");
                 }
         }
+
+        public function nombreDistancia($parametros,$persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+                
+            if($validacion){
+                $id=$validacion['id'];
+                $leer = $this->db->from($this->tbDistancia)
+                                    ->select('descripcion','id')
+                                    ->where('datos_carrera',$id)
+                                    ->fetchAll();
+                if($leer){
+                    $this->response->result = $leer;
+                    return  $this->response->SetResponse(true,"Distancias de la carrera {$parametros->nombreCarrera}");
+                }else{
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Parece que la carrera {$parametros->nombreCarrera} no existe");
+                }
+            }$this->response->result = null;
+            return  $this->response->SetResponse(true,"Parece que no eres administrador");
+         }
 
         public function actDistance($parametros,$persona){
             $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
@@ -680,10 +702,10 @@ use App\Models\BdModel,
             }
         }
 
-        public function todasCarreras(){
-             $carrera = $this->db->from($this->tbCarrera)
-                            ->select('id, nombreCarrera, lugar, fecha')
-                            ->fetchAll();
+        public function carreras(){
+            $carrera=$this->db->from($this->tbCarrera)
+                           ->select('id, nombreCarrera, fecha, lugar','id')
+                           ->fetchAll();
             return $carrera;
         }
 
@@ -738,8 +760,9 @@ use App\Models\BdModel,
                 $id=$validacion['id'];
 
                     $validacion3 = $this->db->from($this->tbBoleto)
+                                ->select('id, precio, periodoVentainicio, periodoVentafin, cantidadBoletos, distancia','id')
                                 ->where('carrera',$id)
-                                ->fetch();
+                                ->fetchAll();
 
                     if($validacion3){
                          $this->response->result = $validacion3;
@@ -788,4 +811,118 @@ use App\Models\BdModel,
             }
         }
 
-    }
+        public function actBoleto($parametros, $persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+            if($validacion){
+                $id=$validacion['id'];
+                $validacion2 = $this->db->from($this->tbDistancia)
+                                ->where('descripcion',$parametros->distancia)
+                                ->where('datos_carrera',$id)
+                                ->fetch();
+                if($validacion2){
+                    $id2=$validacion2['id'];
+                    $validacion3 = $this->db->from($this->tbBoleto)
+                                ->where('distancia',$id2)
+                                ->where('carrera',$id)
+                                ->fetch();
+                                
+                    if($validacion3){
+                        $idBoleto=$validacion3['id'];
+                        $data=[
+                            'precio'=>$parametros->precio,
+                            'periodoVentaInicio'=>$parametros->inicio,
+                            'periodoVentaFin'=>$parametros->fin,
+                            'cantidadBoletos'=>$parametros->cantidad,
+                            'tipo_boleto'=>$parametros->tipo,
+                        ];
+                        $agregar=$this->db->update($this->tbBoleto)
+                                        ->where('id',$idBoleto)
+                                        ->set($data)
+                                        ->execute();
+                        $this->response->result = null;
+
+                        return  $this->response->SetResponse(true,"Se ha actualizado un boleto exitosamente");
+                    }else{
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Ha ocurrido un error");
+                    }
+                }else{
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La distancia no existe");
+                }
+            }else{
+                $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La carrera no existe");
+            }
+        }
+
+        public function delBoleto($parametros, $persona){
+            $validacion = self::validarCarrera($parametros->nombreCarrera, $persona);
+            if($validacion){
+                $id=$validacion['id'];
+                $validacion2 = $this->db->from($this->tbDistancia)
+                                ->where('descripcion',$parametros->distancia)
+                                ->where('datos_carrera',$id)
+                                ->fetch();
+                if($validacion2){
+                    $id2=$validacion2['id'];
+                    $validacion3 = $this->db->from($this->tbBoleto)
+                                ->where('distancia',$id2)
+                                ->where('carrera',$id)
+                                ->fetch();
+                                
+                    if($validacion3){
+                        $idBoleto=$validacion3['id'];
+
+                        $delete=$this->db->delete($this->tbBoleto)
+                                    ->where('id',$idBoleto)
+                                    ->execute();
+
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"Se ha eliminado un boleto exitosamente");
+
+
+                    }else{
+                        $this->response->result = null;
+                        return  $this->response->SetResponse(true,"no existe el boleto");
+                    }
+                }else{
+                    $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La distancia no existe");
+                }
+            }else{
+                $this->response->result = null;
+                        return  $this->response->SetResponse(true,"La carrera no existe");
+            }
+        }
+
+        //imagenes
+        public function addImagen($parametros, $imagen,$persona){
+            $imageContent = file_get_contents($imagen['imagen2']);
+            $imageContentBase64 = base64_encode($imageContent);
+
+            $data=[
+                'portada'=>$imageContentBase64,
+                'datos_carrera'=>$parametros['id'],
+            ];
+
+            $agregar=$this->db->insertInto($this->tbGaleria)
+                            ->values($data)
+                            ->execute();
+
+            $this->response->result = null;
+                        return  $this->response->SetResponse(true,"imagen agregada con exito");
+         
+        }
+
+        public function verImagen($parametros,$persona){
+            $validacion3 = $this->db->from($this->tbGaleria)
+                                ->select('portada')
+                                ->where('datos_carrera',$parametros['id'])
+                                ->fetchAll();
+            header("Content-type: image/jpeg");
+            $this->response->result = $validacion3;
+                        return  $this->response->SetResponse(true,"Portada");
+        }
+
+}

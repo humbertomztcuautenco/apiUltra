@@ -17,6 +17,7 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->get('verDistancias/{token}', AdminController::class.':verDistance');//listo
     $group->put('actDistancia/{token}', AdminController::class.':actDistancia');//listo
     $group->delete('eliminarDistancia/{token}', AdminController::class.':delDistance');//listo
+    $group->get('nombreDistancias/{token}', AdminController::class.':nombreDistancia');//listo
     //avisos
     $group->post('crearAviso/{token}', AdminController::class.':crearAviso');//listo
     $group->put('actualizarAviso/{token}', AdminController::class.':actAviso');//listo
@@ -43,4 +44,12 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->post('agregarBoleto/{token}', AdminController::class.':addBoleto');//listo
     $group->get('verBoleto/{token}', AdminController::class.':verBoleto');//listo
     $group->get('verBoleto2/{token}', AdminController::class.':verBoleto2');//listo
+<<<<<<< HEAD
+    $group->put('actualizarBoleto/{token}', AdminController::class.':actBoleto');//listo
+    $group->delete('eliminarBoleto/{token}', AdminController::class.':delBoleto');//listo
+    //imagenes
+    $group->post('agregarImagen/{token}', AdminController::class.':addImagen');//listo
+    $group->get('verImagen/{token}', AdminController::class.':verImagen');//listo
+=======
+>>>>>>> main
 });
