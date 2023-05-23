@@ -898,7 +898,7 @@ use App\Models\BdModel,
 
         //imagenes
         public function addImagen($parametros, $imagen,$persona){
-            $imageContent = file_get_contents($imagen['imagen']);
+            $imageContent = file_get_contents($imagen['imagen2']);
             $imageContentBase64 = base64_encode($imageContent);
 
             $data=[
