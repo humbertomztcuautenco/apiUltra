@@ -27,6 +27,7 @@ use App\Models\BdModel,
                 $this->response->result = $res->id;
                 return  $this->response->SetResponse(true,'id.');
         }
+        
 
         public function addFavorito($parametros, $persona){
             $validacion = $this->db->from($this->tbCarrera)
