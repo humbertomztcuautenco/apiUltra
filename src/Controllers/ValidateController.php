@@ -19,6 +19,13 @@ class ValidateController{
             ->getBody()->write(json_encode( $this->valid->validateE($parametros)));
         return $res;
     }
+    function validateToken(Request $req, Response $res, $args){
+        $token = $args['token'];
+        
+        $res->withHeader('Content-type','application/json')
+            ->getBody()->write(json_encode( $this->valid->validarToken($token)));
+        return $res;
+    }
    
     function validarCodigo(Request $req, Response $res, $args){
         $parametros = json_decode($req->getBody()->getContents());

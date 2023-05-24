@@ -9,6 +9,7 @@ use App\Models\BdModel,
     App\Lib\Auth;
 
 
+
 class ValidateModel{
     private $db=null;
     private $response;
@@ -306,5 +307,16 @@ class ValidateModel{
                  $this->response->result = $extencionPais;
          return  $this->response->SetResponse(true,'Lista de codigos de paises');
 
+    }
+
+    public function validarToken($data){
+        //$token=new Auth();
+        $res=auth::validateToken($data);
+        if(!$res){
+            $this->response->errors="Token incorrecto";
+            return $this->response->SetResponse(false);
+        }
+        $this->response->result=$res;
+        return $this->response->SetResponse(true,"Token correcto");
     }
 }
