@@ -282,7 +282,7 @@ class AdminController{
     }
 
     public function verImagen(Request $req, Response $res, $args){
-        $parametros = $_POST;  // Datos del formulario
+        $parametros = json_decode($req->getBody()->getContents());
 
         $token = $args['token'];
 

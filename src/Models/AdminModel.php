@@ -898,32 +898,54 @@ use App\Models\BdModel,
 
         //imagenes
         public function addImagen($parametros, $imagen,$persona){
-            $imageContent = file_get_contents($imagen['imagen2']);
-            $imageContentBase64 = base64_encode($imageContent);
-
-            $data=[
-                'portada'=>$imageContentBase64,
-                'datos_carrera'=>$parametros['id'],
-            ];
-
-            $agregar=$this->db->insertInto($this->tbGaleria)
-                            ->values($data)
-                            ->execute();
+            if ($imagen['error'] === UPLOAD_ERR_OK) {
+                // Obtener la ruta temporal del archivo
+                $imagePath = $imagen['tmp_name'];
+            
+                // Leer el contenido del archivo
+                $imageContent = file_get_contents($imagePath);
+            
+                // Procesar y guardar el contenido de la imagen en la base de datos
+                $imageContentBase64 = base64_encode($imageContent);
+            
+                $data = [
+                    'portada' => $imageContentBase64,
+                    'datos_carrera' => $parametros['id'],
+                ];
+            
+                $agregar = $this->db->insertInto($this->tbGaleria)
+                                    ->values($data)
+                                    ->execute();
 
             $this->response->result = null;
                         return  $this->response->SetResponse(true,"imagen agregada con exito");
+            }
          
         }
 
-        public function verImagen($parametros,$persona){
+        public function verImagen($parametros, $persona) {
             $validacion3 = $this->db->from($this->tbGaleria)
-                                ->select('portada')
-                                ->where('datos_carrera',$parametros['id'])
-                                ->fetchAll();
-            header("Content-type: image/jpeg");
-            $this->response->result = $validacion3;
-                        return  $this->response->SetResponse(true,"Portada");
+                                    ->where('datos_carrera', $parametros->id)
+                                    ->fetch();
+        
+            if ($validacion3) {
+                // Obtener los datos de la imagen codificados en base64
+                $imageData = $validacion3['portada'];
+        
+                // Decodificar los datos de la imagen desde base64
+                $imageContent = base64_decode($imageData);
+        
+                // Enviar las cabeceras correctas para mostrar la imagen
+                header("Content-type: image/jpeg/png");
+        
+                // Mostrar la imagen
+                return $imageContent;
+                exit;
+            } else {
+                // Manejar el caso cuando no se encuentre la imagen en la base de datos
+                return $this->response->SetResponse(false, "No se encontró la imagen");
+            }
         }
-
+        
         
 }

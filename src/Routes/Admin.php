@@ -48,5 +48,5 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->delete('eliminarBoleto/{token}', AdminController::class.':delBoleto');//listo
     //imagenes
     $group->post('agregarImagen/{token}', AdminController::class.':addImagen');//listo
-    $group->get('verImagen/{token}', AdminController::class.':verImagen');//listo
+    $group->get('verImagen/{token}', AdminController::class.':verImagen');
 });
