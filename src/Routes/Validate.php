@@ -23,4 +23,7 @@ $app->group('/api/', function (RouteCollectorProxy $group) use ($authMiddleware)
 
     $group->get('getUser/{token}', ValidateController::class.':getUser');//listo
     $group->get('getCodePais', ValidateController::class.':getCodePais');
+    
+    $group->post('validarToken/{token}', ValidateController::class.':validateToken');
+   
 });

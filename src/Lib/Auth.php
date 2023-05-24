@@ -73,25 +73,27 @@ class Auth {
 
     public static function validateToken($token){
         if(empty($token)||$token == NULL) {
-            // throw new Exception("Invalid token supplied.");
+            //throw new Exception("Invalid token supplied.");
             return false;
         }
         $decode = self::decode64($token);
         // var_dump($decode);
         if ($decode === NULL) {
-            // throw new Exception("Token no exist");
+            //throw new Exception("Token no exist");
             return false;
         }
         // var_dump($validate);
         if ($decode->exp <= time()) {
-            // throw new Exception("Token Expired");
+            //throw new Exception("Token Expired");
             return false;
         }
-        if($decode->aud !== self::Aud()) {
-            throw new Exception("Invalid user logged in.");
-        }
+        //if($decode->aud !== self::Aud()) {
+           // throw new Exception("Invalid user logged in.");
+        //}
         return true;
     }
+
+   
 
     private static function decode64($token){
         $data=base64_decode($token);

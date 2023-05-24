@@ -10,6 +10,7 @@ $app->group('/api/corredor/', function (RouteCollectorProxy $group) use ($authMi
     $group->get('getInfo/{token}', CorredorController::class.':getInfo');//listo
     //corredor
     $group->post('agregarCorredor/{token}', CorredorController::class.':addCorredor');//listo
-    $group->get('Favoritos/{token}', CorredorController::class.':verFavorito');//listo
-    $group->delete('eliminarFavorito/{token}', CorredorController::class.':delFavorito');//listo
+    
+    $group->post('inscribir/{token}', CorredorController::class.':inscribir');
+    $group->post('carrerasInscrito/{token}', CorredorController::class.':carrerasInsc');
 });

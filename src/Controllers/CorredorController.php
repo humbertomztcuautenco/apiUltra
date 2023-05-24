@@ -18,4 +18,20 @@ class CorredorController{
                 ->getBody()->write(json_encode( $this->corredor->addCorredor($parametros,$token)));
         return $res;
     }
+    public function inscribir(Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->corredor->inscribir($parametros,$token)));
+        return $res;
+    }
+    public function carrerasInsc (Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+        $token = $args['token'];
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->corredor->carrerasInsc($parametros,$token)));
+        return $res;
+    }
 }
