@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: *");
 header('Content-Type: application/json; charset=utf-8');*/
 
-header("Access-Control-Allow-Origin: http://localhost/ultraWEB/");
+header("Access-Control-Allow-Origin: http://localhost/ultraWEB/usuario");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: *");
 header('Content-Type: application/json; charset=utf-8');
