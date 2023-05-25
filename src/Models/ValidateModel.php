@@ -23,7 +23,6 @@ class ValidateModel{
         $db = new DbModel();
         $this -> db = $db->sqlPDO;
         $this -> response=new Response();
-        $this -> responseA=new ResponseAuth();
     }
 
     public function validateE($parametros){
@@ -70,7 +69,7 @@ class ValidateModel{
                 
                 $insertCode = $this->db->update($this->tbCodigos)
                                     ->where('correo',$email)
-                                    ->where('tipo_persona',$tipo_persona)
+                                    ->where('tipo_persona',$parametros->tipo_persona)
                                     ->set($data)
                                     ->execute();
             }
