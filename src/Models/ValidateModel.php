@@ -167,17 +167,19 @@ class ValidateModel{
         
         $authUser = $this->db->from($this->tbUser)
                          ->where('correo',$parametros->correo)
+                         ->where('tipo_persona',$parametros->tipo_persona)
                          ->fetch();
 
         if ($authUser != null) {
             $validarPassword = password_verify($parametros->pasword, $authUser['pasword']);
-            if(!$validarPassword) return $this->response->SetResponse(false,'Contraseña incorrecta.');
+            if(!$validarPassword) 
+            return $this->response->SetResponse(false,'Contraseña incorrecta.');
             $token = Auth::addToken($authUser);
-                    $this->responseA->result = $token;
-                    $this->responseA->id = $authUser['id'];
-            return  $this->responseA->SetResponse(true,'Inicio de sesion correcto');
+                    $this->response->result = ['token'=>$token,'id'=>$authUser['id']];
+                    
+            return  $this->response->SetResponse(true,'Inicio de sesion correcto');
         }else{
-                    // $this->response->result = null;
+                    
             return  $this->response->SetResponse(false,'Correo incorrecto.');
         }                 
         
