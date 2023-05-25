@@ -218,12 +218,7 @@ class AdminController{
                 ->getBody()->write(json_encode( $this->admin->delTurismo($parametros, $token)));
         return $res;
     }
-    public function todasCarreras(Request $req, Response $res, $args){
-
-        $res    ->withHeader('Content-type','application/json')
-                ->getBody()->write(json_encode( $this->admin->carreras()));
-        return $res;
-    }
+    
     //boletos
 
     public function addBoleto(Request $req, Response $res, $args){

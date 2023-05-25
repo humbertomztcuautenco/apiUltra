@@ -4,12 +4,6 @@ use App\Lib\Auth;
 use App\Middleware\AuthMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
-// Headers 
-header("Access-Control-Allow-Origin: http://localhost/");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Access-Control-Allow-Headers: *");
-header('Content-Type: application/json; charset=utf-8');
-
 $authMiddleware = new AuthMiddleware();
 
 $app->group('/api/', function (RouteCollectorProxy $group) use ($authMiddleware) {

@@ -109,5 +109,11 @@ use App\Models\BdModel,
                 return  $this->response->SetResponse(true,"ha ocurrido un error");
             }
         }
+        public function carreras(){
+            $carrera=$this->db->from($this->tbCarrera)
+                           ->select('id, nombreCarrera, fecha, lugar','id')
+                           ->fetchAll();
+            return $carrera;
+        }
         
     }

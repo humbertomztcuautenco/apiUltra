@@ -39,7 +39,7 @@ $app->group('/api/admin/', function (RouteCollectorProxy $group) use ($authMiddl
     $group->get('verTurismo/{token}', AdminController::class.':verTurismo');//listo
     $group->delete('eliminarTurismo/{token}', AdminController::class.':delTurismo');//listo
 
-    $group->get('carreras', AdminController::class.':todasCarreras');//listo
+    
     //boletos
     $group->post('agregarBoleto/{token}', AdminController::class.':addBoleto');//listo
     $group->get('verBoleto/{token}', AdminController::class.':verBoleto');//listo
