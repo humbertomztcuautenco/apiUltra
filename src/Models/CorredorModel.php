@@ -99,4 +99,38 @@ use App\Models\BdModel,
                             ->fetchAll();
                             return $leer2;
         }
+
+        public function inscritoCarrera($parametros){
+            $validacion = $this->db->from($this->tbCarrera)
+                            ->where('id',$parametros->id)
+                            ->fetch();  
+            if($validacion){
+                
+                $leer2=$this->db->from($this->tbInscripcion)
+                            ->select('datos_carrera.nombreCarrera, persona.nombre, corredor.tallaPlayera')
+                            ->innerJoin('corredor ON inscripcion.corredor=corredor.id')
+                            ->innerJoin('persona ON corredor.persona_id=persona.id')
+                            ->innerJoin('datos_carrera ON inscripcion.datos_carrera=datos_carrera.id')
+                            ->where('datos_carrera',$validacion['id'])
+                            ->fetchAll();
+                            return $leer2;
+            }
+        }
+
+        public function cuentaParticipantes($parametros){
+
+            $validacion = $this->db->from($this->tbCarrera)
+                            ->where('id',$parametros->id)
+                            ->fetch();  
+            if($validacion){
+                
+                $leer2=$this->db->from($this->tbInscripcion)
+                            ->select('datos_carrera.nombreCarrera as nombre_carrera, COUNT(*) as cantidad_personas')
+                            ->innerJoin('datos_carrera ON inscripcion.datos_carrera=datos_carrera.id')
+                            ->where('datos_carrera',$validacion['id'])
+                            ->groupBy('datos_carrera.id, datos_carrera.nombreCarrera')
+                            ->fetchAll();
+                            return $leer2;
+            }
+        }
     }

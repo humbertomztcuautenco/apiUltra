@@ -12,4 +12,6 @@ $app->group('/api/user/', function (RouteCollectorProxy $group) use ($authMiddle
     $group->post('agregarFavorito/{token}', UserController::class.':addFavorito');//listo
     $group->get('Favoritos/{token}', UserController::class.':verFavorito');//listo
     $group->delete('eliminarFavorito/{token}', UserController::class.':delFavorito');//listo
+
+    $group->get('carreras', UserController::class.':todasCarreras');//listo
 });

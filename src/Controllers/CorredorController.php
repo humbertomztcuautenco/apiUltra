@@ -34,4 +34,19 @@ class CorredorController{
                 ->getBody()->write(json_encode( $this->corredor->carrerasInsc($parametros,$token)));
         return $res;
     }
+
+    public function inscritoCarrera (Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->corredor->inscritoCarrera($parametros)));
+        return $res;
+    }
+    public function cuentaParticipantes (Request $req, Response $res, $args){
+        $parametros = json_decode($req->getBody()->getContents());
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->corredor->cuentaParticipantes($parametros)));
+        return $res;
+    }
 }

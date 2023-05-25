@@ -12,5 +12,8 @@ $app->group('/api/corredor/', function (RouteCollectorProxy $group) use ($authMi
     $group->post('agregarCorredor/{token}', CorredorController::class.':addCorredor');//listo
     
     $group->post('inscribir/{token}', CorredorController::class.':inscribir');
-    $group->post('carrerasInscrito/{token}', CorredorController::class.':carrerasInsc');
+    $group->get('carrerasInscrito/{token}', CorredorController::class.':carrerasInsc');
+    $group->get('inscritoCarrera', CorredorController::class.':inscritoCarrera');
+    $group->get('cuenta', CorredorController::class.':cuentaParticipantes');
+    
 });

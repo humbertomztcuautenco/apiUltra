@@ -702,12 +702,7 @@ use App\Models\BdModel,
             }
         }
 
-        public function carreras(){
-            $carrera=$this->db->from($this->tbCarrera)
-                           ->select('id, nombreCarrera, fecha, lugar','id')
-                           ->fetchAll();
-            return $carrera;
-        }
+        
 
         //boletos
         public function addBoleto($parametros, $persona){

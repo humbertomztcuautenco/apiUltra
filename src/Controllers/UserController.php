@@ -44,4 +44,10 @@ class UserController{
                 ->getBody()->write(json_encode( $this->user->delFavorito($parametros,$token)));
         return $res;
     }
+    public function todasCarreras(Request $req, Response $res, $args){
+
+        $res    ->withHeader('Content-type','application/json')
+                ->getBody()->write(json_encode( $this->user->carreras()));
+        return $res;
+    }
 }
